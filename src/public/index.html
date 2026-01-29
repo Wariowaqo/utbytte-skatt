@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Norsk Skattekalkulator - Utbytte vs Lønn</title>
+    <style>
+        :root {
+            --primary-color: #1a5f7a;
+            --secondary-color: #57c5b6;
+            --accent-color: #159895;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --error-color: #dc3545;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --border-color: #dee2e6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            opacity: 0.9;
+        }
+
+        .disclaimer {
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+
+        .disclaimer strong {
+            color: #856404;
+        }
+
+        .card {
+            background: var(--card-background);
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .card h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        input[type="number"].error {
+            border-color: var(--error-color);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .slider-container {
+            margin-top: 10px;
+        }
+
+        .slider-container input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--border-color);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            cursor: pointer;
+        }
+
+        .slider-value {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .slider-value span {
+            padding: 4px 10px;
+            background: var(--background-color);
+            border-radius: 4px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(26, 95, 122, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--background-color);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 25px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        @media (max-width: 992px) {
+            .grid-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Results section */
+        #results {
+            display: none;
+        }
+
+        #results.visible {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comparison-table th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: var(--background-color);
+        }
+
+        .comparison-table tr.best {
+            background: rgba(40, 167, 69, 0.1);
+        }
+
+        .comparison-table tr.best td:first-child::before {
+            content: "★ ";
+            color: var(--success-color);
+        }
+
+        .rank-badge {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .rank-1 { background: gold; color: #333; }
+        .rank-2 { background: silver; color: #333; }
+        .rank-3 { background: #cd7f32; color: white; }
+        .rank-other { background: var(--border-color); color: #666; }
+
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--background-color), white);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-card .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-card .label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .recommendation-card {
+            background: linear-gradient(135deg, rgba(87, 197, 182, 0.1), rgba(21, 152, 149, 0.1));
+            border: 1px solid var(--secondary-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .recommendation-card h3 {
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .considerations-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .considerations-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .considerations-list li:last-child {
+            border-bottom: none;
+        }
+
+        .considerations-list .icon {
+            font-size: 1.2rem;
+        }
+
+        .error-message {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.visible {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Chart container */
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        /* Tabs for detailed view */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: var(--primary-color);
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Calculation steps accordion */
+        .calculation-steps {
+            margin-top: 20px;
+        }
+
+        .step-item {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .step-header {
+            padding: 15px;
+            background: var(--background-color);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .step-header:hover {
+            background: var(--border-color);
+        }
+
+        .step-content {
+            padding: 15px;
+            background: white;
+            display: none;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+
+        .step-item.open .step-content {
+            display: block;
+        }
+
+        .step-item.open .step-header .arrow {
+            transform: rotate(180deg);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--accent-color);
+        }
+
+        /* Utility classes */
+        .text-success { color: var(--success-color); }
+        .text-error { color: var(--error-color); }
+        .text-muted { color: #666; }
+        .text-center { text-align: center; }
+        .mt-20 { margin-top: 20px; }
+        .mb-20 { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>📊 Norsk Skattekalkulator</h1>
+            <p>Sammenlign strategier for uttak av overskudd fra AS - Lønn vs Utbytte</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Disclaimer -->
+        <div class="disclaimer">
+            <strong>⚠️ Viktig:</strong> Denne kalkulatoren er et planleggings- og sammenligningsverktøy. 
+            Den gir <strong>ikke</strong> juridisk eller skatterådgivning. 
+            Brukeren er ansvarlig for alle beslutninger basert på resultatene. 
+            Konsulter en autorisert regnskapsfører eller skatterådgiver for profesjonell veiledning.
+        </div>
+
+        <!-- Input Form -->
+        <div class="card">
+            <h2>📝 Inndata</h2>
+            
+            <div id="errorMessages"></div>
+
+            <form id="calculatorForm">
+                <div class="grid grid-2">
+                    <!-- Required inputs -->
+                    <div class="form-group">
+                        <label for="profit">Årlig overskudd før skatt (NOK) *</label>
+                        <input type="number" id="profit" name="profit" min="0" step="1000" placeholder="f.eks. 1000000" required>
+                        <small>Selskapets overskudd før selskapsskatt</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="employerZone">Arbeidsgiveravgiftssone *</label>
+                        <select id="employerZone" name="employerZone" required>
+                            <option value="">Velg sone...</option>
+                            <option value="1">Sone 1 - Storbyområder (14.1%)</option>
+                            <option value="1a">Sone 1a - Tilsvarende sone 1 (14.1%)</option>
+                            <option value="2">Sone 2 - Mellomstore byer (10.6%)</option>
+                            <option value="3">Sone 3 - Distriktskommuner (6.4%)</option>
+                            <option value="4">Sone 4 - Tynne distrikter (5.4%)</option>
+                            <option value="4a">Sone 4a - Spesielle områder (7.9%)</option>
+                            <option value="5">Sone 5 - Finnmark/Nord-Troms (0%)</option>
+                        </select>
+                        <small>Sonen der selskapet er registrert</small>
+                    </div>
+                </div>
+
+                <!-- Strategy selection -->
+                <div class="form-group">
+                    <label>Uttaksstrategi</label>
+                    <div class="slider-container">
+                        <input type="range" id="salaryRatio" name="salaryRatio" min="0" max="100" value="50">
+                        <div class="slider-value">
+                            <span id="salaryLabel">Lønn: 50%</span>
+                            <span id="dividendLabel">Utbytte: 50%</span>
+                        </div>
+                    </div>
+                    <small>Kalkulatoren sammenligner automatisk alle strategier uansett valg her</small>
+                </div>
+
+                <hr style="margin: 30px 0; border: none; border-top: 1px solid var(--border-color);">
+
+                <h3 style="margin-bottom: 20px; color: var(--text-color);">Valgfrie innstillinger</h3>
+
+                <div class="grid grid-2">
+                    <!-- Pension -->
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="pensionEnabled" name="pensionEnabled">
+                            <label for="pensionEnabled" style="margin: 0;">Inkluder pensjonsbidrag (OTP)</label>
+                        </div>
+                        <div id="pensionRateContainer" style="margin-top: 15px; display: none;">
+                            <label for="pensionRate">Pensjonssats (%)</label>
+                            <input type="number" id="pensionRate" name="pensionRate" min="2" max="7" step="0.5" value="2">
+                            <small>Lovpålagt minimum er 2%, maksimalt fradragsberettiget er 7%</small>
+                        </div>
+                    </div>
+
+                    <!-- Retention -->
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="retentionEnabled" name="retentionEnabled">
+                            <label for="retentionEnabled" style="margin: 0;">Tilbakehold overskudd i selskapet</label>
+                        </div>
+                        <div id="retentionContainer" style="margin-top: 15px; display: none;">
+                            <label for="retentionPercentage">Tilbakeholdelsesprosent (%)</label>
+                            <input type="number" id="retentionPercentage" name="retentionPercentage" min="0" max="100" step="5" value="30">
+                            <small>Andel av overskudd som beholdes i selskapet</small>
+                        </div>
+                    </div>
+
+                    <!-- Share cost basis -->
+                    <div class="form-group">
+                        <label for="shareCostBasis">Inngangsverdi på aksjer (NOK)</label>
+                        <input type="number" id="shareCostBasis" name="shareCostBasis" min="0" step="1000" placeholder="f.eks. 30000">
+                        <small>For beregning av skjermingsfradrag (valgfritt)</small>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary" id="calculateBtn">
+                        🧮 Beregn og sammenlign
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="resetBtn">
+                        🔄 Nullstill
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Loading indicator -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Beregner alle scenarioer...</p>
+        </div>
+
+        <!-- Results section -->
+        <div id="results">
+            <!-- Summary stats -->
+            <div class="card">
+                <h2>📈 Resultatoversikt</h2>
+                <div class="grid grid-3" id="summaryStats">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Comparison table -->
+            <div class="card">
+                <h2>📊 Scenariosammenligning</h2>
+                <div style="overflow-x: auto;">
+                    <table class="comparison-table" id="comparisonTable">
+                        <!-- Populated by JavaScript -->
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="card">
+                <h2>💡 Anbefalinger</h2>
+                <div id="recommendations">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Detailed breakdown -->
+            <div class="card">
+                <h2>📋 Detaljert beregning</h2>
+                <div class="tabs">
+                    <button class="tab active" data-tab="salary">100% Lønn</button>
+                    <button class="tab" data-tab="dividend">100% Utbytte</button>
+                    <button class="tab" data-tab="optimized">Optimalisert</button>
+                </div>
+                <div id="detailedBreakdown">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Export -->
+            <div class="card">
+                <h2>📥 Eksporter</h2>
+                <p>Last ned beregningene for videre analyse:</p>
+                <div class="button-group">
+                    <button class="btn btn-secondary" id="exportExcel">
+                        📊 Last ned Excel (.xlsx)
+                    </button>
+                    <button class="btn btn-secondary" id="printResults">
+                        🖨️ Skriv ut
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>
+                <strong>Skatteår: 2025</strong> | 
+                Kilder: <a href="https://www.skatteetaten.no" target="_blank">Skatteetaten</a>, 
+                <a href="https://lovdata.no" target="_blank">Lovdata</a>
+            </p>
+            <p class="mt-20">
+                Sist oppdatert: Januar 2025 | 
+                Dette er et planleggingsverktøy, ikke profesjonell rådgivning.
+            </p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

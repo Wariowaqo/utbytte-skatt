@@ -1,0 +1,31 @@
+{
+  "name": "utbytte-skatt",
+  "version": "1.0.0",
+  "description": "Norwegian AS profit extraction tax calculator and comparison tool",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "dev": "node --watch src/server.js"
+  },
+  "keywords": [
+    "norwegian",
+    "tax",
+    "calculator",
+    "AS",
+    "dividend",
+    "salary",
+    "utbytte",
+    "skatt"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

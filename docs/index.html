@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Norsk Skattekalkulator - Utbytte vs Lønn</title>
+    <style>
+        :root {
+            --primary-color: #1a5f7a;
+            --secondary-color: #57c5b6;
+            --accent-color: #159895;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --error-color: #dc3545;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --border-color: #dee2e6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            opacity: 0.9;
+        }
+
+        .disclaimer {
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+
+        .disclaimer strong {
+            color: #856404;
+        }
+
+        .card {
+            background: var(--card-background);
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .card h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        input[type="number"].error {
+            border-color: var(--error-color);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .slider-container {
+            margin-top: 10px;
+        }
+
+        .slider-container input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--border-color);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            cursor: pointer;
+        }
+
+        .slider-value {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .slider-value span {
+            padding: 4px 10px;
+            background: var(--background-color);
+            border-radius: 4px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(26, 95, 122, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--background-color);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .grid {
+            display: grid;
+            gap: 25px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        @media (max-width: 992px) {
+            .grid-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+        }
+
+        #results {
+            display: none;
+        }
+
+        #results.visible {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comparison-table th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: var(--background-color);
+        }
+
+        .comparison-table tr.best {
+            background: rgba(40, 167, 69, 0.1);
+        }
+
+        .rank-badge {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .rank-1 { background: gold; color: #333; }
+        .rank-2 { background: silver; color: #333; }
+        .rank-3 { background: #cd7f32; color: white; }
+        .rank-other { background: var(--border-color); color: #666; }
+
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--background-color), white);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-card .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-card .label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .recommendation-card {
+            background: linear-gradient(135deg, rgba(87, 197, 182, 0.1), rgba(21, 152, 149, 0.1));
+            border: 1px solid var(--secondary-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .recommendation-card h3 {
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .considerations-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .considerations-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .considerations-list li:last-child {
+            border-bottom: none;
+        }
+
+        .error-message {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.visible {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: var(--primary-color);
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .calculation-steps {
+            margin-top: 20px;
+        }
+
+        .step-item {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .step-header {
+            padding: 15px;
+            background: var(--background-color);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .step-header:hover {
+            background: var(--border-color);
+        }
+
+        .step-content {
+            padding: 15px;
+            background: white;
+            display: none;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+
+        .step-item.open .step-content {
+            display: block;
+        }
+
+        .step-item.open .step-header .arrow {
+            transform: rotate(180deg);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--accent-color);
+        }
+
+        .text-success { color: var(--success-color); }
+        .text-error { color: var(--error-color); }
+        .text-muted { color: #666; }
+        .mt-20 { margin-top: 20px; }
+        .mb-20 { margin-bottom: 20px; }
+
+        .sources-info {
+            background: #e8f4f8;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 0.85rem;
+        }
+
+        .sources-info h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        @media print {
+            header { background: var(--primary-color) !important; -webkit-print-color-adjust: exact; }
+            .btn, .tabs, #calculatorForm { display: none; }
+            .card { box-shadow: none; border: 1px solid #ddd; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>📊 Norsk Skattekalkulator</h1>
+            <p>Sammenlign strategier for uttak av overskudd fra AS - Lønn vs Utbytte (Skatteår 2025)</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="disclaimer">
+            <strong>⚠️ Viktig:</strong> Denne kalkulatoren er et planleggings- og sammenligningsverktøy. 
+            Den gir <strong>ikke</strong> juridisk eller skatterådgivning. 
+            Brukeren er ansvarlig for alle beslutninger basert på resultatene. 
+            Konsulter en autorisert regnskapsfører eller skatterådgiver for profesjonell veiledning.
+        </div>
+
+        <div class="card">
+            <h2>📝 Inndata</h2>
+            
+            <div id="errorMessages"></div>
+
+            <form id="calculatorForm">
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="profit">Årlig overskudd før skatt (NOK) *</label>
+                        <input type="number" id="profit" name="profit" min="0" step="1000" placeholder="f.eks. 1000000" required>
+                        <small>Selskapets overskudd før selskapsskatt</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="employerZone">Arbeidsgiveravgiftssone *</label>
+                        <select id="employerZone" name="employerZone" required>
+                            <option value="">Velg sone...</option>
+                            <option value="1">Sone 1 - Storbyområder (14.1%)</option>
+                            <option value="1a">Sone 1a - Tilsvarende sone 1 (14.1%)</option>
+                            <option value="2">Sone 2 - Mellomstore byer (10.6%)</option>
+                            <option value="3">Sone 3 - Distriktskommuner (6.4%)</option>
+                            <option value="4">Sone 4 - Tynne distrikter (5.4%)</option>
+                            <option value="4a">Sone 4a - Spesielle områder (7.9%)</option>
+                            <option value="5">Sone 5 - Finnmark/Nord-Troms (0%)</option>
+                        </select>
+                        <small>Sonen der selskapet er registrert</small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Uttaksstrategi</label>
+                    <div class="slider-container">
+                        <input type="range" id="salaryRatio" name="salaryRatio" min="0" max="100" value="50">
+                        <div class="slider-value">
+                            <span id="salaryLabel">Lønn: 50%</span>
+                            <span id="dividendLabel">Utbytte: 50%</span>
+                        </div>
+                    </div>
+                    <small>Kalkulatoren sammenligner automatisk alle strategier uansett valg her</small>
+                </div>
+
+                <hr style="margin: 30px 0; border: none; border-top: 1px solid var(--border-color);">
+
+                <h3 style="margin-bottom: 20px; color: var(--text-color);">Valgfrie innstillinger</h3>
+
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="pensionEnabled" name="pensionEnabled">
+                            <label for="pensionEnabled" style="margin: 0;">Inkluder pensjonsbidrag (OTP)</label>
+                        </div>
+                        <div id="pensionRateContainer" style="margin-top: 15px; display: none;">
+                            <label for="pensionRate">Pensjonssats (%)</label>
+                            <input type="number" id="pensionRate" name="pensionRate" min="2" max="7" step="0.5" value="2">
+                            <small>Lovpålagt minimum er 2%, maksimalt fradragsberettiget er 7%</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="retentionEnabled" name="retentionEnabled">
+                            <label for="retentionEnabled" style="margin: 0;">Tilbakehold overskudd i selskapet</label>
+                        </div>
+                        <div id="retentionContainer" style="margin-top: 15px; display: none;">
+                            <label for="retentionPercentage">Tilbakeholdelsesprosent (%)</label>
+                            <input type="number" id="retentionPercentage" name="retentionPercentage" min="0" max="100" step="5" value="30">
+                            <small>Andel av overskudd som beholdes i selskapet</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="shareCostBasis">Inngangsverdi på aksjer (NOK)</label>
+                        <input type="number" id="shareCostBasis" name="shareCostBasis" min="0" step="1000" placeholder="f.eks. 30000">
+                        <small>For beregning av skjermingsfradrag (valgfritt)</small>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary" id="calculateBtn">
+                        🧮 Beregn og sammenlign
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="resetBtn">
+                        🔄 Nullstill
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Beregner alle scenarioer...</p>
+        </div>
+
+        <div id="results">
+            <div class="card">
+                <h2>📈 Resultatoversikt</h2>
+                <div class="grid grid-3" id="summaryStats"></div>
+            </div>
+
+            <div class="card">
+                <h2>📊 Scenariosammenligning</h2>
+                <div style="overflow-x: auto;">
+                    <table class="comparison-table" id="comparisonTable"></table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>💡 Anbefalinger</h2>
+                <div id="recommendations"></div>
+            </div>
+
+            <div class="card">
+                <h2>📋 Detaljert beregning</h2>
+                <div class="tabs">
+                    <button class="tab active" data-tab="salary">100% Lønn</button>
+                    <button class="tab" data-tab="dividend">100% Utbytte</button>
+                    <button class="tab" data-tab="optimized">Optimalisert</button>
+                </div>
+                <div id="detailedBreakdown"></div>
+            </div>
+
+            <div class="card">
+                <h2>📥 Eksporter</h2>
+                <p>Last ned beregningene for videre analyse:</p>
+                <div class="button-group">
+                    <button class="btn btn-secondary" id="exportCSV">
+                        📊 Last ned CSV
+                    </button>
+                    <button class="btn btn-secondary" id="printResults">
+                        🖨️ Skriv ut
+                    </button>
+                </div>
+            </div>
+
+            <div class="sources-info">
+                <h4>📚 Kilder og forutsetninger</h4>
+                <p>Alle beregninger er basert på offisielle satser fra <a href="https://www.skatteetaten.no" target="_blank">Skatteetaten</a> og <a href="https://lovdata.no" target="_blank">Lovdata</a> for skatteåret 2025.</p>
+                <p><strong>Forutsetninger:</strong> Én aksjonær/ansatt, ingen andre inntektskilder, person mellom 17-69 år, standard ansettelsesforhold.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>
+                <strong>Skatteår: 2025</strong> | 
+                Kilder: <a href="https://www.skatteetaten.no" target="_blank">Skatteetaten</a>, 
+                <a href="https://lovdata.no" target="_blank">Lovdata</a>
+            </p>
+            <p class="mt-20">
+                Sist oppdatert: Januar 2025 | 
+                Dette er et planleggingsverktøy, ikke profesjonell rådgivning.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+    /**
+     * Norwegian Tax Calculator - Static Version
+     * All calculations run in the browser - no server required
+     * 
+     * Tax rates sourced from:
+     * - Skatteetaten (skatteetaten.no)
+     * - Lovdata (lovdata.no)
+     * Tax Year: 2025
+     */
+
+    // ============================================================================
+    // TAX RATES AND CONSTANTS - 2025
+    // ============================================================================
+
+    const TAX_CONFIG = {
+        // Corporate tax rate (22%)
+        // Source: https://www.skatteetaten.no/satser/skatt-pa-alminnelig-inntekt/
+        CORPORATE_TAX_RATE: 0.22,
+
+        // Employer's social security rates by zone
+        // Source: https://www.skatteetaten.no/satser/arbeidsgiveravgift/
+        EMPLOYER_AGA_RATES: {
+            '1': 0.141,
+            '1a': 0.141,
+            '2': 0.106,
+            '3': 0.064,
+            '4': 0.054,
+            '4a': 0.079,
+            '5': 0.00
+        },
+
+        // Personal income tax rate (22%)
+        PERSONAL_TAX_RATE: 0.22,
+
+        // Bracket tax thresholds and rates 2025
+        // Source: https://www.skatteetaten.no/satser/trinnskatt/
+        BRACKET_TAX: [
+            { threshold: 217400, rate: 0.017 },
+            { threshold: 306050, rate: 0.040 },
+            { threshold: 697150, rate: 0.137 },
+            { threshold: 942400, rate: 0.167 },
+            { threshold: 1410750, rate: 0.176 }
+        ],
+
+        // Social security contribution (trygdeavgift) - 7.8% for salary
+        // Source: https://www.skatteetaten.no/satser/trygdeavgift/
+        TRYGDEAVGIFT_RATE: 0.078,
+
+        // Dividend gross-up factor (oppjusteringsfaktor) - 1.72 for 2025
+        // Source: https://www.skatteetaten.no/person/skatt/hjelp-til-riktig-skatt/aksjer-og-verdipapirer/utbytte/
+        DIVIDEND_GROSS_UP: 1.72,
+
+        // Minstefradrag (minimum standard deduction)
+        // Source: https://www.skatteetaten.no/satser/minstefradrag/
+        MINSTEFRADRAG: {
+            rate: 0.46,
+            minimum: 4000,
+            maximum: 114950
+        },
+
+        // Personfradrag (personal allowance)
+        // Source: https://www.skatteetaten.no/satser/personfradrag/
+        PERSONFRADRAG: 73150,
+
+        // Skjermingsrente (estimated for 2025)
+        SKJERMING_RATE: 0.05,
+
+        // OTP limits
+        OTP_MIN_RATE: 0.02,
+        OTP_MAX_RATE: 0.07
+    };
+
+    // ============================================================================
+    // CALCULATION FUNCTIONS
+    // ============================================================================
+
+    function calculateMaxGrossSalary(available, zone, includePension = false, pensionRate = 0.02) {
+        const agaRate = TAX_CONFIG.EMPLOYER_AGA_RATES[zone];
+        const pensionFactor = includePension ? pensionRate : 0;
+        const totalCostFactor = 1 + agaRate + pensionFactor * (1 + agaRate);
+        const grossSalary = available / totalCostFactor;
+        const employerAGA = grossSalary * agaRate;
+        const pensionContribution = includePension ? grossSalary * pensionRate : 0;
+
+        return {
+            grossSalary: Math.round(grossSalary),
+            employerAGA: Math.round(employerAGA),
+            pensionContribution: Math.round(pensionContribution)
+        };
+    }
+
+    function calculateBracketTax(grossSalary) {
+        let totalTax = 0;
+        const details = [];
+
+        for (let i = 0; i < TAX_CONFIG.BRACKET_TAX.length; i++) {
+            const bracket = TAX_CONFIG.BRACKET_TAX[i];
+            const nextThreshold = i < TAX_CONFIG.BRACKET_TAX.length - 1 
+                ? TAX_CONFIG.BRACKET_TAX[i + 1].threshold 
+                : Infinity;
+
+            if (grossSalary > bracket.threshold) {
+                const taxableInBracket = Math.min(grossSalary, nextThreshold) - bracket.threshold;
+                const taxInBracket = taxableInBracket * bracket.rate;
+                totalTax += taxInBracket;
+                details.push(`Trinn ${i+1}: ${formatCurrency(taxableInBracket)} × ${(bracket.rate*100).toFixed(1)}% = ${formatCurrency(taxInBracket)}`);
+            }
+        }
+
+        return { total: Math.round(totalTax), details };
+    }
+
+    function calculateMinstefradrag(grossSalary) {
+        let fradrag = grossSalary * TAX_CONFIG.MINSTEFRADRAG.rate;
+        fradrag = Math.max(fradrag, TAX_CONFIG.MINSTEFRADRAG.minimum);
+        fradrag = Math.min(fradrag, TAX_CONFIG.MINSTEFRADRAG.maximum);
+        fradrag = Math.min(fradrag, grossSalary);
+        return Math.round(fradrag);
+    }
+
+    function calculateSalaryScenario(profit, zone, options = {}) {
+        const { includePension = false, pensionRate = 0.02, retentionPct = 0 } = options;
+        
+        const retained = profit * retentionPct;
+        const available = profit - retained;
+        
+        const salaryCalc = calculateMaxGrossSalary(available, zone, includePension, pensionRate);
+        const grossSalary = salaryCalc.grossSalary;
+        const employerAGA = salaryCalc.employerAGA;
+        
+        const trygdeavgift = Math.round(grossSalary * TAX_CONFIG.TRYGDEAVGIFT_RATE);
+        const bracketTax = calculateBracketTax(grossSalary);
+        const trinnskatt = bracketTax.total;
+        
+        const minstefradrag = calculateMinstefradrag(grossSalary);
+        const taxableIncome = Math.max(0, grossSalary - minstefradrag - TAX_CONFIG.PERSONFRADRAG);
+        const inntektsskatt = Math.round(taxableIncome * TAX_CONFIG.PERSONAL_TAX_RATE);
+        
+        const corporateTaxOnRetained = Math.round(retained * TAX_CONFIG.CORPORATE_TAX_RATE);
+        
+        const totalPersonalTax = trygdeavgift + trinnskatt + inntektsskatt;
+        const netSalary = grossSalary - totalPersonalTax;
+        const totalTax = employerAGA + totalPersonalTax + corporateTaxOnRetained;
+        
+        return {
+            name: '100% Lønn',
+            type: 'salary',
+            grossSalary,
+            employerAGA,
+            trygdeavgift,
+            trinnskatt,
+            inntektsskatt,
+            totalPersonalTax,
+            netPayout: netSalary,
+            totalTax,
+            effectiveRate: totalTax / profit,
+            retained: Math.round(retained - corporateTaxOnRetained),
+            pension: salaryCalc.pensionContribution,
+            details: {
+                bracketTaxDetails: bracketTax.details,
+                minstefradrag,
+                taxableIncome: Math.round(taxableIncome)
+            }
+        };
+    }
+
+    function calculateDividendScenario(profit, options = {}) {
+        const { retentionPct = 0, shareCostBasis = 0 } = options;
+        
+        const retained = profit * retentionPct;
+        const available = profit - retained;
+        
+        const corporateTax = Math.round(profit * TAX_CONFIG.CORPORATE_TAX_RATE);
+        const corporateTaxOnRetained = Math.round(retained * TAX_CONFIG.CORPORATE_TAX_RATE);
+        const corporateTaxOnDistributed = Math.round(available * TAX_CONFIG.CORPORATE_TAX_RATE);
+        
+        const dividendAvailable = available - corporateTaxOnDistributed;
+        
+        const skjermingsfradrag = Math.min(
+            Math.round(shareCostBasis * TAX_CONFIG.SKJERMING_RATE),
+            dividendAvailable
+        );
+        
+        const taxableDividend = dividendAvailable - skjermingsfradrag;
+        const grossedUp = taxableDividend * TAX_CONFIG.DIVIDEND_GROSS_UP;
+        const dividendTax = Math.round(grossedUp * TAX_CONFIG.PERSONAL_TAX_RATE);
+        
+        const netDividend = dividendAvailable - dividendTax;
+        const totalTax = corporateTax + dividendTax;
+        
+        return {
+            name: '100% Utbytte',
+            type: 'dividend',
+            corporateTax,
+            dividendDistributed: dividendAvailable,
+            skjermingsfradrag,
+            taxableDividend: Math.round(taxableDividend),
+            grossedUp: Math.round(grossedUp),
+            dividendTax,
+            netPayout: netDividend,
+            totalTax,
+            effectiveRate: totalTax / profit,
+            retained: Math.round(retained - corporateTaxOnRetained)
+        };
+    }
+
+    function calculateCombinationScenario(profit, zone, salaryRatio, options = {}) {
+        const { includePension = false, pensionRate = 0.02, retentionPct = 0, shareCostBasis = 0 } = options;
+        
+        const retained = profit * retentionPct;
+        const available = profit - retained;
+        
+        const salaryPortion = available * (salaryRatio / 100);
+        const dividendPortion = available - salaryPortion;
+        
+        // Salary calculations
+        const agaRate = TAX_CONFIG.EMPLOYER_AGA_RATES[zone];
+        const pensionFactor = includePension ? pensionRate : 0;
+        const totalCostFactor = 1 + agaRate + pensionFactor * (1 + agaRate);
+        const grossSalary = Math.round(salaryPortion / totalCostFactor);
+        const employerAGA = Math.round(grossSalary * agaRate);
+        const pensionContrib = includePension ? Math.round(grossSalary * pensionRate) : 0;
+        
+        const trygdeavgift = Math.round(grossSalary * TAX_CONFIG.TRYGDEAVGIFT_RATE);
+        const trinnskatt = calculateBracketTax(grossSalary).total;
+        const minstefradrag = calculateMinstefradrag(grossSalary);
+        const taxableIncome = Math.max(0, grossSalary - minstefradrag - TAX_CONFIG.PERSONFRADRAG);
+        const inntektsskatt = Math.round(taxableIncome * TAX_CONFIG.PERSONAL_TAX_RATE);
+        const totalSalaryTax = trygdeavgift + trinnskatt + inntektsskatt;
+        const netSalary = grossSalary - totalSalaryTax;
+        
+        // Dividend calculations
+        const corporateTaxOnDividend = Math.round(dividendPortion * TAX_CONFIG.CORPORATE_TAX_RATE);
+        const corporateTaxOnRetained = Math.round(retained * TAX_CONFIG.CORPORATE_TAX_RATE);
+        const dividendAvailable = dividendPortion - corporateTaxOnDividend;
+        
+        const grossedUp = dividendAvailable * TAX_CONFIG.DIVIDEND_GROSS_UP;
+        const dividendTax = Math.round(grossedUp * TAX_CONFIG.PERSONAL_TAX_RATE);
+        const netDividend = dividendAvailable - dividendTax;
+        
+        const totalTax = employerAGA + totalSalaryTax + corporateTaxOnDividend + corporateTaxOnRetained + dividendTax;
+        const netPayout = netSalary + netDividend;
+        
+        return {
+            name: `${salaryRatio}% Lønn / ${100-salaryRatio}% Utbytte`,
+            type: 'combination',
+            salaryRatio,
+            grossSalary,
+            employerAGA,
+            trygdeavgift,
+            trinnskatt,
+            inntektsskatt,
+            netSalary,
+            corporateTax: corporateTaxOnDividend + corporateTaxOnRetained,
+            dividendDistributed: dividendAvailable,
+            dividendTax,
+            netDividend,
+            netPayout,
+            totalTax,
+            effectiveRate: totalTax / profit,
+            retained: Math.round(retained - corporateTaxOnRetained),
+            pension: pensionContrib
+        };
+    }
+
+    function findOptimalRatio(profit, zone, options = {}) {
+        let bestRatio = 0;
+        let bestNetPayout = 0;
+        
+        for (let ratio = 0; ratio <= 100; ratio++) {
+            const scenario = calculateCombinationScenario(profit, zone, ratio, options);
+            if (scenario.netPayout > bestNetPayout) {
+                bestNetPayout = scenario.netPayout;
+                bestRatio = ratio;
+            }
+        }
+        
+        return bestRatio;
+    }
+
+    function generateAllScenarios(profit, zone, options = {}) {
+        const scenarios = [];
+        
+        // 100% Salary
+        scenarios.push(calculateSalaryScenario(profit, zone, options));
+        
+        // 100% Dividend
+        scenarios.push(calculateDividendScenario(profit, options));
+        
+        // 50/50 Split
+        const split = calculateCombinationScenario(profit, zone, 50, options);
+        split.name = '50/50 Fordeling';
+        scenarios.push(split);
+        
+        // Optimized
+        const optimalRatio = findOptimalRatio(profit, zone, options);
+        const optimized = calculateCombinationScenario(profit, zone, optimalRatio, options);
+        optimized.name = `Optimalisert (${optimalRatio}% lønn)`;
+        optimized.type = 'optimized';
+        scenarios.push(optimized);
+        
+        // Sort by net payout descending
+        scenarios.sort((a, b) => b.netPayout - a.netPayout);
+        
+        // Add ranking
+        scenarios.forEach((s, i) => {
+            s.rank = i + 1;
+            s.differenceFromBest = scenarios[0].netPayout - s.netPayout;
+        });
+        
+        return scenarios;
+    }
+
+    // ============================================================================
+    // UI FUNCTIONS
+    // ============================================================================
+
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('nb-NO', {
+            style: 'currency',
+            currency: 'NOK',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(amount);
+    }
+
+    function formatPercent(value) {
+        return new Intl.NumberFormat('nb-NO', {
+            style: 'percent',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(value);
+    }
+
+    let currentResults = null;
+
+    function updateSliderLabels() {
+        const value = parseInt(document.getElementById('salaryRatio').value);
+        document.getElementById('salaryLabel').textContent = `Lønn: ${value}%`;
+        document.getElementById('dividendLabel').textContent = `Utbytte: ${100 - value}%`;
+    }
+
+    function showErrors(errors) {
+        document.getElementById('errorMessages').innerHTML = errors.map(err => 
+            `<div class="error-message">⚠️ ${err}</div>`
+        ).join('');
+    }
+
+    function clearErrors() {
+        document.getElementById('errorMessages').innerHTML = '';
+    }
+
+    function validateForm() {
+        const errors = [];
+        const profit = document.getElementById('profit').value;
+        const zone = document.getElementById('employerZone').value;
+        const pensionEnabled = document.getElementById('pensionEnabled').checked;
+        const pensionRate = parseFloat(document.getElementById('pensionRate').value);
+
+        if (!profit || parseFloat(profit) <= 0) {
+            errors.push('Overskudd må være et positivt tall');
+        }
+        if (!zone) {
+            errors.push('Velg en arbeidsgiveravgiftssone');
+        }
+        if (pensionEnabled && (pensionRate < 2 || pensionRate > 7)) {
+            errors.push('Pensjonssats må være mellom 2% og 7%');
+        }
+
+        return errors;
+    }
+
+    function calculate() {
+        clearErrors();
+        
+        const errors = validateForm();
+        if (errors.length > 0) {
+            showErrors(errors);
+            return;
+        }
+
+        const profit = parseFloat(document.getElementById('profit').value);
+        const zone = document.getElementById('employerZone').value;
+        const pensionEnabled = document.getElementById('pensionEnabled').checked;
+        const pensionRate = parseFloat(document.getElementById('pensionRate').value) / 100;
+        const retentionEnabled = document.getElementById('retentionEnabled').checked;
+        const retentionPct = retentionEnabled ? parseFloat(document.getElementById('retentionPercentage').value) / 100 : 0;
+        const shareCostBasis = parseFloat(document.getElementById('shareCostBasis').value) || 0;
+
+        const options = {
+            includePension: pensionEnabled,
+            pensionRate: pensionRate,
+            retentionPct: retentionPct,
+            shareCostBasis: shareCostBasis
+        };
+
+        currentResults = generateAllScenarios(profit, zone, options);
+        displayResults(currentResults, profit);
+        
+        document.getElementById('results').classList.add('visible');
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function displayResults(scenarios, profit) {
+        // Summary stats
+        const best = scenarios[0];
+        const worst = scenarios[scenarios.length - 1];
+        
+        document.getElementById('summaryStats').innerHTML = `
+            <div class="stat-card">
+                <div class="value text-success">${formatCurrency(best.netPayout)}</div>
+                <div class="label">Beste netto utbetaling</div>
+                <div class="text-muted">${best.name}</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">${formatPercent(best.effectiveRate)}</div>
+                <div class="label">Laveste effektive skattesats</div>
+            </div>
+            <div class="stat-card">
+                <div class="value text-error">${formatCurrency(worst.differenceFromBest)}</div>
+                <div class="label">Maksimal forskjell</div>
+                <div class="text-muted">Mellom beste og dårligste</div>
+            </div>
+        `;
+
+        // Comparison table
+        let tableHtml = `
+            <thead>
+                <tr>
+                    <th>Rang</th>
+                    <th>Scenario</th>
+                    <th>Netto utbetaling</th>
+                    <th>Total skatt</th>
+                    <th>Effektiv sats</th>
+                    <th>Forskjell</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
+
+        scenarios.forEach((s, i) => {
+            const rankClass = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-other';
+            const rowClass = i === 0 ? 'best' : '';
+            tableHtml += `
+                <tr class="${rowClass}">
+                    <td><span class="rank-badge ${rankClass}">${s.rank}</span></td>
+                    <td><strong>${s.name}</strong></td>
+                    <td>${formatCurrency(s.netPayout)}</td>
+                    <td>${formatCurrency(s.totalTax)}</td>
+                    <td>${formatPercent(s.effectiveRate)}</td>
+                    <td>${i === 0 ? '-' : formatCurrency(s.differenceFromBest)}</td>
+                </tr>
+            `;
+        });
+
+        tableHtml += '</tbody>';
+        document.getElementById('comparisonTable').innerHTML = tableHtml;
+
+        // Recommendations
+        const recHtml = `
+            <div class="recommendation-card">
+                <h3>🎯 Anbefalt strategi: ${best.name}</h3>
+                <p>Med overskudd på ${formatCurrency(profit)} gir denne strategien best netto utbetaling.</p>
+                <p class="mt-20">
+                    <strong>Forventet netto utbetaling:</strong> ${formatCurrency(best.netPayout)}<br>
+                    <strong>Effektiv skattesats:</strong> ${formatPercent(best.effectiveRate)}<br>
+                    <strong>Besparelse vs dårligste:</strong> ${formatCurrency(worst.differenceFromBest)}
+                </p>
+            </div>
+            <h3 class="mt-20">⚖️ Viktige vurderinger</h3>
+            <ul class="considerations-list">
+                <li><span class="icon">⚠️</span><div><strong>Pensjonsopptjening</strong><br>Lønn gir opptjening i folketrygden og pensjonsordninger. Utbytte gir ingen slik opptjening.</div></li>
+                <li><span class="icon">⚠️</span><div><strong>Sykepenger</strong><br>Sykepenger beregnes ut fra lønnsinntekt. Ren utbyttestrategi gir ingen sykepengegrunnlag.</div></li>
+                <li><span class="icon">ℹ️</span><div><strong>Fleksibilitet</strong><br>Tilbakeholdt overskudd kan investeres i selskapet eller tas ut senere som utbytte.</div></li>
+            </ul>
+        `;
+        document.getElementById('recommendations').innerHTML = recHtml;
+
+        // Detailed breakdown
+        displayDetailedBreakdown(scenarios, profit);
+    }
+
+    function displayDetailedBreakdown(scenarios, profit) {
+        const salaryScenario = scenarios.find(s => s.type === 'salary');
+        const dividendScenario = scenarios.find(s => s.type === 'dividend');
+        const optimizedScenario = scenarios.find(s => s.type === 'optimized');
+
+        const container = document.getElementById('detailedBreakdown');
+        
+        let html = '';
+        
+        // Salary tab
+        html += `<div class="tab-content active" data-tab="salary">`;
+        if (salaryScenario) {
+            html += `
+                <div class="grid grid-2 mb-20">
+                    <div>
+                        <h4>Selskapsnivå</h4>
+                        <table class="comparison-table">
+                            <tr><td>Overskudd</td><td>${formatCurrency(profit)}</td></tr>
+                            <tr><td>Bruttolønn utbetalt</td><td>${formatCurrency(salaryScenario.grossSalary)}</td></tr>
+                            <tr><td>Arbeidsgiveravgift</td><td>${formatCurrency(salaryScenario.employerAGA)}</td></tr>
+                            ${salaryScenario.pension ? `<tr><td>Pensjonsbidrag</td><td>${formatCurrency(salaryScenario.pension)}</td></tr>` : ''}
+                        </table>
+                    </div>
+                    <div>
+                        <h4>Personlig nivå</h4>
+                        <table class="comparison-table">
+                            <tr><td>Bruttolønn</td><td>${formatCurrency(salaryScenario.grossSalary)}</td></tr>
+                            <tr><td>Trygdeavgift (7.8%)</td><td>${formatCurrency(salaryScenario.trygdeavgift)}</td></tr>
+                            <tr><td>Trinnskatt</td><td>${formatCurrency(salaryScenario.trinnskatt)}</td></tr>
+                            <tr><td>Inntektsskatt (22%)</td><td>${formatCurrency(salaryScenario.inntektsskatt)}</td></tr>
+                            <tr><td><strong>Netto lønn</strong></td><td><strong>${formatCurrency(salaryScenario.netPayout)}</strong></td></tr>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+        html += `</div>`;
+        
+        // Dividend tab
+        html += `<div class="tab-content" data-tab="dividend">`;
+        if (dividendScenario) {
+            html += `
+                <div class="grid grid-2 mb-20">
+                    <div>
+                        <h4>Selskapsnivå</h4>
+                        <table class="comparison-table">
+                            <tr><td>Overskudd</td><td>${formatCurrency(profit)}</td></tr>
+                            <tr><td>Selskapsskatt (22%)</td><td>${formatCurrency(dividendScenario.corporateTax)}</td></tr>
+                            <tr><td>Utbytte utdelt</td><td>${formatCurrency(dividendScenario.dividendDistributed)}</td></tr>
+                        </table>
+                    </div>
+                    <div>
+                        <h4>Personlig nivå</h4>
+                        <table class="comparison-table">
+                            <tr><td>Utbytte mottatt</td><td>${formatCurrency(dividendScenario.dividendDistributed)}</td></tr>
+                            <tr><td>Skjermingsfradrag</td><td>${formatCurrency(dividendScenario.skjermingsfradrag)}</td></tr>
+                            <tr><td>Oppjustert grunnlag (×1.72)</td><td>${formatCurrency(dividendScenario.grossedUp)}</td></tr>
+                            <tr><td>Utbytteskatt (22%)</td><td>${formatCurrency(dividendScenario.dividendTax)}</td></tr>
+                            <tr><td><strong>Netto utbytte</strong></td><td><strong>${formatCurrency(dividendScenario.netPayout)}</strong></td></tr>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+        html += `</div>`;
+        
+        // Optimized tab
+        html += `<div class="tab-content" data-tab="optimized">`;
+        if (optimizedScenario) {
+            html += `
+                <div class="grid grid-2 mb-20">
+                    <div>
+                        <h4>Lønnsandel (${optimizedScenario.salaryRatio}%)</h4>
+                        <table class="comparison-table">
+                            <tr><td>Bruttolønn</td><td>${formatCurrency(optimizedScenario.grossSalary)}</td></tr>
+                            <tr><td>Arbeidsgiveravgift</td><td>${formatCurrency(optimizedScenario.employerAGA)}</td></tr>
+                            <tr><td>Trygdeavgift</td><td>${formatCurrency(optimizedScenario.trygdeavgift)}</td></tr>
+                            <tr><td>Trinnskatt</td><td>${formatCurrency(optimizedScenario.trinnskatt)}</td></tr>
+                            <tr><td>Inntektsskatt</td><td>${formatCurrency(optimizedScenario.inntektsskatt)}</td></tr>
+                            <tr><td><strong>Netto lønn</strong></td><td><strong>${formatCurrency(optimizedScenario.netSalary)}</strong></td></tr>
+                        </table>
+                    </div>
+                    <div>
+                        <h4>Utbytteandel (${100 - optimizedScenario.salaryRatio}%)</h4>
+                        <table class="comparison-table">
+                            <tr><td>Selskapsskatt</td><td>${formatCurrency(optimizedScenario.corporateTax)}</td></tr>
+                            <tr><td>Utbytte utdelt</td><td>${formatCurrency(optimizedScenario.dividendDistributed)}</td></tr>
+                            <tr><td>Utbytteskatt</td><td>${formatCurrency(optimizedScenario.dividendTax)}</td></tr>
+                            <tr><td><strong>Netto utbytte</strong></td><td><strong>${formatCurrency(optimizedScenario.netDividend)}</strong></td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="value text-success">${formatCurrency(optimizedScenario.netPayout)}</div>
+                    <div class="label">Total netto utbetaling (lønn + utbytte)</div>
+                </div>
+            `;
+        }
+        html += `</div>`;
+        
+        container.innerHTML = html;
+    }
+
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.tab === tabName);
+        });
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.toggle('active', content.dataset.tab === tabName);
+        });
+    }
+
+    function exportCSV() {
+        if (!currentResults) return;
+        
+        let csv = 'Scenario,Netto utbetaling,Total skatt,Effektiv skattesats,Forskjell fra beste\n';
+        currentResults.forEach(s => {
+            csv += `"${s.name}",${s.netPayout},${s.totalTax},${(s.effectiveRate * 100).toFixed(2)}%,${s.differenceFromBest}\n`;
+        });
+        
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'skatteberegning.csv';
+        link.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function resetForm() {
+        document.getElementById('calculatorForm').reset();
+        document.getElementById('salaryRatio').value = 50;
+        updateSliderLabels();
+        document.getElementById('pensionRateContainer').style.display = 'none';
+        document.getElementById('retentionContainer').style.display = 'none';
+        document.getElementById('results').classList.remove('visible');
+        clearErrors();
+        currentResults = null;
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('salaryRatio').addEventListener('input', updateSliderLabels);
+        
+        document.getElementById('pensionEnabled').addEventListener('change', (e) => {
+            document.getElementById('pensionRateContainer').style.display = e.target.checked ? 'block' : 'none';
+        });
+        
+        document.getElementById('retentionEnabled').addEventListener('change', (e) => {
+            document.getElementById('retentionContainer').style.display = e.target.checked ? 'block' : 'none';
+        });
+        
+        document.getElementById('calculatorForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            calculate();
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', resetForm);
+        document.getElementById('exportCSV').addEventListener('click', exportCSV);
+        document.getElementById('printResults').addEventListener('click', () => window.print());
+        
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+        });
+        
+        updateSliderLabels();
+    });
+    </script>
+</body>
+</html>
